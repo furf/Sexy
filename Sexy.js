@@ -35,12 +35,12 @@
       this.config = cfg;
     },
 
-    get: function (type, url, defer, fn) {
+    get: function (type, url, /* defer, */ fn) {
 
-      if (typeof defer !== 'boolean') {
-        fn = defer;
-        defer = false;
-      }
+      // if (typeof defer !== 'boolean') {
+      //   fn = defer;
+      //   defer = false;
+      // }
 
       var RESULT_DATA = '__',
           ON_SEND     = 'send',
@@ -53,56 +53,123 @@
           cfg         = (typeof url !== 'string') ? url : { url: url },
           isScript    = type === SCRIPT,
           isStyle     = type === STYLE,
-          success     = url.success || fn || (isScript || isStyle ? passPrevious : passData);
+
+          /**
+           * Cache the user-configured success callbacks.
+           *
+           * The return value of the user-configured success callback is
+           * stored and passed to the success callback of the subsequent
+           * request. If the user does not supply a success callback, a
+           * pass-through function will return the unmodified response (for all
+           * types except script and style) or the return of last callback
+           * (for script and style data types).
+           */
+          success = url.success || fn || (isScript || isStyle ? passPrevious : passData);
 
       cfgs.push($.extend(cfg, this.cfg, {
 
+        /**
+         * Retrieve script and style data types as text for deferred
+         * evaluation to guarantee ordering. Scripts and styles are inserted
+         * into the DOM immediately before the success callback is fired.
+         */
         dataType: (isScript || isStyle) ? TEXT : type,
 
+        /**
+         * Wrap the user-configured success callback with an
+         * event-driven handler.
+         */
         success: function (data, status) {
 
-          var args = arguments,
-              prev = cfgs[pid];
+          var prev = cfgs[pid];
 
+          /**
+           * Load the stored result from the previous Ajax request if
+           * available. This value will be undefined if the previous
+           * request has not completed or if the current request is the
+           * first.
+           *
+           * If the previous call has returned, fire the user-configured
+           * success callback, passing as arguments the response data
+           * and the previously returned data.
+           *
+           * Or if this is the first call, fire the callback passing
+           * only the response data.
+           */
           if (!prev || RESULT_DATA in prev) {
 
+            /**
+             * If the first argument contains our event manager in its
+             * target property, then the previous response just
+             * completed and triggered its "onSuccess" event, which fired
+             * this callback. Use the passed data as argument to the 
+             * user-configured callback.
+             */
             if (data.target === evt[0]) {
-              args = data.data;
+              status = data.data[1];
+              data   = data.data[0];
             }
 
-            data = args[0];
-
+            /**
+             * Handle deferred script evaluation
+             */
             if (isScript) {
               $.globalEval(data);
+
+            /**
+             * Handle deferred style evaluation
+             */
             } else if (isStyle) {
           		if (data && rnotwhite.test(data)) {
                 $('<style type="text/css"/>').appendTo('head').text(data);
           		}
             }
+            
+            /**
+             * Call the user-configured success callback, passing the current
+             * response and the stored result of the previous success callback
+             * as arguments.
+             */
+            cfg[RESULT_DATA] = success.call(cfg, data, status, prev && prev[RESULT_DATA]);
 
-            cfg[RESULT_DATA] = success.call(cfg, args[0], args[1], prev && prev[RESULT_DATA]);
+            /**
+             * Trigger the "onSuccess" event of the current Ajax request to
+             * trigger the success callback of the subsequent request if its
+             * data has been returned.
+             */
             evt.trigger(ON_SUCCESS + uid);
 
+            /**
+             * If the previous Ajax request has not completed, bind this
+             * success callback to the "onSuccess" event of the previous
+             * request. Pass the arguments from the current response to
+             * the deferred callback in the event's data property. When
+             * the previous Ajax response returns, these arguments will be
+             * applied to the user-configured callback.
+             */
           } else {
             evt.one(ON_SUCCESS + pid, args, cfg.success);
           }
+          
         }
       }));
 
-      function send () {
-        $.ajax(cfg);
-        evt.trigger(ON_SEND + uid);
-      };
-
-      if (defer) {
-        evt.one(ON_SUCCESS + pid, send);
-        this.defer = uid;
-      } else if (this.defer) {
-        evt.one(ON_SEND + this.defer, send);
-      } else {
-        send();
-      }
-
+      // function send () {
+      //   $.ajax(cfg);
+      //   evt.trigger(ON_SEND + uid);
+      // };
+      // 
+      // if (defer) {
+      //   evt.one(ON_SUCCESS + pid, send);
+      //   this.defer = uid;
+      // } else if (this.defer) {
+      //   evt.one(ON_SEND + this.defer, send);
+      // } else {
+      //   send();
+      // }
+      
+      $.ajax(cfg);
+      
       return this;
     }
   };
@@ -111,8 +178,8 @@
    * Slip into something more comfortable: dataType-based convenience methods
    */
   $.each(['html', 'json', 'jsonp', SCRIPT, STYLE, TEXT, 'xml'], function (i, type) {
-    _proto_[type] = function (url, defer, fn) {
-      return this.get(type, url, defer, fn);
+    _proto_[type] = function (url, /* defer, */ fn) {
+      return this.get(type, url, /* defer, */ fn);
     };
   });
 
