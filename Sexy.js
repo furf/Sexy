@@ -108,9 +108,9 @@
              * Handle deferred style evaluation
              */
             } else if (isStyle) {
-          		if (data && rnotwhite.test(data)) {
+              if (data && rnotwhite.test(data)) {
                 $('<style type="text/css"/>').appendTo('head').text(data);
-          		}
+              }
             }
             
             /**
