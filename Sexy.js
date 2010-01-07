@@ -5,25 +5,13 @@
       STYLE  = 'style',
       _proto_;
 
-  function passData (data) {
-    return data;
-  }
-
-  function passPrevious (data, status, previous) {
-    return previous;
-  }
-
-  function couple (data, status, previous) {
-    return (previous || '') + data;
-  }
-
   function Sexy (cfg) {
     if (!(this instanceof Sexy)) {
       return new Sexy(cfg);
     }
-    this.evt = $(this);
     this.cfgs = [];
-    this.config(cfg);
+    this.ajaxSetup(cfg);
+    this.evt = $(this);
   }
 
   _proto_ = Sexy.prototype = {
@@ -31,8 +19,8 @@
     /**
      * Set the mood
      */
-    config: function (cfg) {
-      this.config = cfg;
+    ajaxSetup: function (cfg) {
+      this.cfg = cfg;
     },
 
     get: function (type, url, /* defer, */ fn) {
@@ -174,6 +162,14 @@
     }
   };
 
+  function passData (data) {
+    return data;
+  }
+
+  function passPrevious (data, status, previous) {
+    return previous;
+  }
+
   /**
    * Slip into something more comfortable: dataType-based convenience methods
    */
@@ -209,6 +205,10 @@
       return fn(src, status);
     });
   };
+
+  function couple (data, status, previous) {
+    return (previous || '') + data;
+  }
 
   /**
    * Get naked: alias instance methods as static methods of Sexy constructor
