@@ -10,7 +10,7 @@
       return new Sexy(cfg);
     }
     this.cfgs = [];
-    this.ajaxSetup(cfg);
+    this.setup(cfg);
     this.evt = $(this);
   }
 
@@ -19,7 +19,7 @@
     /**
      * Set the mood
      */
-    ajaxSetup: function (cfg) {
+    setup: function (cfg) {
       this.cfg = cfg;
     },
 
