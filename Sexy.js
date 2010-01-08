@@ -23,6 +23,27 @@
       this.cfg = cfg;
     },
 
+    /**
+     * Nice package: Load a sequence of scripts as text, assemble them in order,
+     * and perform a single insertion.
+     */
+    bundle: function (/* url, url2, ..., fn */) {
+
+      var args = arguments,
+          fn   = $.isFunction(args[args.length - 1]) ? Array.prototype.pop.call(args) : passPrevious,
+          i, n;
+
+      for (i = 0, n = args.length - 1; i < n; ++i) {
+        this.get(TEXT, args[i], couple);
+      }
+
+      return this.get(TEXT, args[i], function (data, status, previous) {
+        var src = couple(data, status, previous);
+        $.globalEval(src);
+        return fn(src, status);
+      });
+    },
+
     get: function (type, url, /* defer, */ fn) {
 
       // if (typeof defer !== 'boolean') {
@@ -170,6 +191,10 @@
     return previous;
   }
 
+  function couple (data, status, previous) {
+    return (previous || '') + data;
+  }
+
   /**
    * Slip into something more comfortable: dataType-based convenience methods
    */
@@ -184,31 +209,6 @@
    */
   _proto_.js  = _proto_[SCRIPT];
   _proto_.css = _proto_[STYLE];
-
-  /**
-   * Nice package: Load a sequence of scripts as text, assemble them in order,
-   * and perform a single insertion.
-   */
-  _proto_.bundle = function (/* url, url2, ..., fn */) {
-
-    var args = arguments,
-        fn   = $.isFunction(args[args.length - 1]) ? Array.prototype.pop.call(args) : passPrevious,
-        i, n;
-
-    for (i = 0, n = args.length - 1; i < n; ++i) {
-      this.get(TEXT, args[i], couple);
-    }
-
-    return this.get(TEXT, args[i], function (data, status, previous) {
-      var src = couple(data, status, previous);
-      $.globalEval(src);
-      return fn(src, status);
-    });
-  };
-
-  function couple (data, status, previous) {
-    return (previous || '') + data;
-  }
 
   /**
    * Get naked: alias instance methods as static methods of Sexy constructor
