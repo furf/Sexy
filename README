@@ -1,0 +1,15 @@
+Sexy.js is a lightweight JavaScript? library which provides a sleek facade and enhanced Sequential Ajax (Sajax) functionality to jQuery's native Ajax methods.
+
+Sequential Ajax, or Sajax, is an Ajax design pattern where related asynchronous XMLHttpRequests are made simultaneously and their callbacks fired in a specified sequence, regardless of the order in which they return, with each callback function receiving the return value of the previous callback function as an additional argument.
+
+Sajax simplifies and speeds the loading of scripts, stylesheets, and data, while facilitating the combination and manipulation of data from multiple sources without complicated workarounds to handle the implicit timing issues of Ajax's asynchronous nature.
+
+Sexy.js makes it look good. Damn good.
+
+Sexy
+  .js('jquery.template.min.js')
+  .css('comments.css')
+  .text('comments.tpl')
+  .json('comments.json', function (data, status, previous) {
+    $.template(previous, data).appendTo('#comments');
+  });
