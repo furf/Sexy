@@ -148,16 +148,16 @@
              */
             evt.trigger(ON_SUCCESS + uid);
 
-            /**
-             * If the previous Ajax request has not completed, bind this
-             * success callback to the "onSuccess" event of the previous
-             * request. Pass the arguments from the current response to
-             * the deferred callback in the event's data property. When
-             * the previous Ajax response returns, these arguments will be
-             * applied to the user-configured callback.
-             */
+          /**
+           * If the previous Ajax request has not completed, bind this
+           * success callback to the "onSuccess" event of the previous
+           * request. Pass the arguments from the current response to
+           * the deferred callback in the event's data property. When
+           * the previous Ajax response returns, these arguments will be
+           * applied to the user-configured callback.
+           */
           } else {
-            evt.one(ON_SUCCESS + pid, args, cfg.success);
+            evt.one(ON_SUCCESS + pid, [data, status], cfg.success);
           }
           
         }
