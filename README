@@ -6,10 +6,30 @@ Sajax simplifies and speeds the loading of scripts, stylesheets, and data, while
 
 Sexy.js makes it look good. Damn good.
 
-Sexy
-  .js('jquery.template.min.js')
-  .css('comments.css')
-  .text('comments.tpl')
-  .json('comments.json', function (data, status, previous) {
-    $.template(previous, data).appendTo('#comments');
+Old and busted
+
+<script src="/js/jquery.template.min.js" type="text/javascript" charset="utf-8"></script>
+<link rel="stylesheet" href="css/comments.css" type="text/css" media="screen" charset="utf-8">
+<script type="text/javascript" charset="utf-8">
+
+$.get('comments.tpl', function (tpl) {
+  $.getJSON('comments.json', function (data) {
+    $.template(tpl, data).appendTo('#comments');
   });
+});
+
+</script>
+
+Sexy
+
+<script type="text/javascript" charset="utf-8">
+
+Sexy
+  .js('/js/jquery.template.min.js')
+  .css('css/comments.css')
+  .text('comments.tpl')
+  .json('comments.json', function (data, status, tpl) {
+      $.template(tpl, data).appendTo('#comments');
+  });
+
+</script>
