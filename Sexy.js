@@ -1,11 +1,17 @@
+// @todo support remote CSS with <link/>
+// @todo figure out callback trigger for remote CSS
 (function ($) {
 
-  var TEXT   = 'text',
+  var HOST   = location.protocol + '//' + location.hostname + (location.port !== '' ? ':' + location.port : ''),
+      TEXT   = 'text',
       SCRIPT = 'script',
       STYLE  = 'style',
       _proto_;
 
   function Sexy (cfg) {
+    /**
+     * Allow instantiation without new keyword
+     */
     if (!(this instanceof Sexy)) {
       return new Sexy(cfg);
     }
@@ -62,6 +68,11 @@
           cfg         = (typeof url !== 'string') ? url : { url: url },
           isScript    = type === SCRIPT,
           isStyle     = type === STYLE,
+          
+          // for the time being isXSS only tracks JS
+          // need to figure out how to fire success on addition of <link/>
+          // (look at YUI)
+          isXSS       = isScript && cfg.url.indexOf('http') === 0 && cfg.url.indexOf(HOST) === -1,
 
           /**
            * Cache the user-configured success callbacks.
@@ -82,14 +93,14 @@
          * evaluation to guarantee ordering. Scripts and styles are inserted
          * into the DOM immediately before the success callback is fired.
          */
-        dataType: (isScript || isStyle) ? TEXT : type,
+        dataType: (!isXSS && isScript || isStyle) ? TEXT : type,
 
         /**
          * Wrap the user-configured success callback with an
          * event-driven handler.
          */
         success: function (data, status) {
-
+          
           var prev = cfgs[pid];
 
           /**
@@ -114,7 +125,7 @@
              * this callback. Use the passed data as argument to the 
              * user-configured callback.
              */
-            if (data.target === evt[0]) {
+            if (data && data.target === evt[0]) {
               status = data.data[1];
               data   = data.data[0];
             }
@@ -159,7 +170,7 @@
           } else {
             evt.one(ON_SUCCESS + pid, [data, status], cfg.success);
           }
-          
+
         }
       }));
 
@@ -177,7 +188,13 @@
       //   send();
       // }
       
-      $.ajax(cfg);
+      if (isXSS && isScript) {
+        evt.one(ON_SUCCESS + pid, function () {
+          $.ajax(cfg);
+        });
+      } else {
+        $.ajax(cfg);
+      }
       
       return this;
     }
