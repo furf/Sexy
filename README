@@ -35,3 +35,78 @@ Sexy
   });
 
 </script>
+
+Sexy provides a chainable API for loading each of the data types supported by jQuery's native Ajax methods:
+
+* html (url, callback)
+* json (url, callback)
+* jsonp (url, callback)
+* script (url, callback)
+* text (url, callback)
+* xml (url, callback)
+
+as well as one additional method for loading CSS:
+
+* style (url, callback)
+
+and two aliases for sex appeal:
+
+* js (url, callback) // -> script
+* css (url, callback) // -> style
+
+Each of the above methods can take either a url and optional callback as argument or a single ajaxSetup config object (see jQuery documentation).
+
+All callbacks receive three arguments, data and status (from jQuery's native functionality) and previous which is the return value of the previously executed callback.
+
+Sexy also has an additional method for bundling packaged scripts:
+
+* bundle (url /*, url2, ... */ /*, callback */)
+
+The bundle method loads multiple scripts as text and, once all requests are complete, makes a single script injection, and then fires the optional callback. This method is useful for maintaining JavaScript in packages in an environment that doesn't support or necessitate a server-side bundling solution.
+
+Sample code:
+
+// Binding
+
+Sexy
+.json('ticketingData.json', function (data) {
+  return data.ticketingInfo;
+})
+.json('gameData.json', function (data, status, ticketingInfo) {
+  for (var i = 0, n = data.games.length; i < n; ++i) {
+    data.games[i].ticketingInfo = ticketingInfo[data.games[i].id];
+  }
+  // render games...
+});
+
+// Bootstrapping
+
+Sexy
+.js('js/jquery.template.min.js')
+.css('css/comments.css')
+.text('comments.tpl', function (data, status, previous) {
+  return data;
+})
+.json({
+  url: 'comments.json',
+  data: { articleId: 123 },
+  success: function (data, status, previous) {
+    $.template(previous, data).appendTo('#comments');
+  }
+});
+
+// Bundling
+
+Sexy
+.bundle(
+  'mlb.js',
+  'mlb.stats.js',
+  'mlb.stats.widget.js',
+  'mlb.stats.widget.LeagueSelector.js',
+  'mlb.stats.widget.StatTypeSelector.js',
+  'mlb.stats.app.js',
+  'mlb.stats.app.SortableStats.js',
+  function () {
+    mlb.stats.app.SortableStats.init();
+  }
+);
