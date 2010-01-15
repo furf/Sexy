@@ -1,6 +1,6 @@
 h2. Sexy.js
 
-DEMO: http://sexyjs.com/demos/comments/
+"Demo":http://sexyjs.com/demos/comments/
 
 Sexy.js is a lightweight JavaScript library which provides a sleek facade and enhanced Sequential Ajax (Sajax) functionality to jQuery's native Ajax methods.
 
