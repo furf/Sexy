@@ -8,7 +8,7 @@ Sajax simplifies and speeds the loading of scripts, stylesheets, and data, while
 
 Sexy.js makes it look good. Damn good.
 
-Old and busted
+h3 Old and busted
 
 <script src="/js/jquery.template.min.js" type="text/javascript" charset="utf-8"></script>
 <link rel="stylesheet" href="css/comments.css" type="text/css" media="screen" charset="utf-8">
