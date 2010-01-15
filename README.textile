@@ -130,6 +130,6 @@ h4. Bundling
 
 h3. History
 
-The original goal when designing $.sajax, the predecessor to Sexy, was a simple pattern for executing and handling multiple Ajax requests. But by building upon jQuery's robust Ajax framework, $.sajax also coincidentally achieved the goal of parallel asynchronous script loading, a performance optimization similar to those found in Kyle Simpson's "LABjs":http://labjs.com/ and Steve Souders' "EFWS":http://stevesouders.com/efws/. However, neither $.sajax nor Sexy are currently designed for optimal performance. For pure performance, use either of these two more mature examples. $.sajax's dependency on jQuery also results in a bit of a performance hit. For convenience and style with substance, use Sexy.js.
+The original goal when designing $.sajax, the predecessor to Sexy, was a simple pattern for executing and handling multiple Ajax requests. But by building upon jQuery's robust Ajax framework, $.sajax also coincidentally achieved the goal of parallel asynchronous script loading, a performance optimization similar to those found in Kyle Simpson's "LABjs":http://labjs.com/ and Steve Souders' "EFWS":http://stevesouders.com/efws/. However, neither $.sajax nor Sexy are currently designed for optimal performance. For pure performance, use either of these two more mature examples. Sexy's dependency on jQuery results in a slight performance hit. For convenience and style with substance, use Sexy.js.
 
-NOTE: The library is still in alpha, but _is_ currently in use on MLB.com's 2010 website (in development).
+NOTE: The library is just entering beta, but _is_ currently in use on MLB.com's 2010 website (in development). Stay tuned for more...
