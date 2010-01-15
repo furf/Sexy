@@ -1,3 +1,5 @@
+h2. Sexy.js
+
 DEMO: http://sexyjs.com/demos/comments/
 
 Sexy.js is a lightweight JavaScript library which provides a sleek facade and enhanced Sequential Ajax (Sajax) functionality to jQuery's native Ajax methods.
@@ -10,6 +12,7 @@ Sexy.js makes it look good. Damn good.
 
 Old and busted
 
+<pre><code>
 <script src="/js/jquery.template.min.js" type="text/javascript" charset="utf-8"></script>
 <link rel="stylesheet" href="css/comments.css" type="text/css" media="screen" charset="utf-8">
 <script type="text/javascript" charset="utf-8">
@@ -21,9 +24,11 @@ $.get('comments.tpl', function (tpl) {
 });
 
 </script>
+</code></pre>
 
 Sexy
 
+<pre><code>
 <script type="text/javascript" charset="utf-8">
 
 Sexy
@@ -35,6 +40,7 @@ Sexy
   });
 
 </script>
+</code></pre>
 
 Sexy provides a chainable API for loading each of the data types supported by jQuery's native Ajax methods:
 
@@ -64,7 +70,7 @@ Sexy also has an additional method for bundling packaged scripts:
 
 The bundle method loads multiple scripts as text and, once all requests are complete, makes a single script injection, and then fires the optional callback. This method is useful for maintaining JavaScript in packages in an environment that doesn't support or necessitate a server-side bundling solution.
 
-h2 Sample code:
+Sample code:
 
 // Binding
 
