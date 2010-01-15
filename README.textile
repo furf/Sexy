@@ -37,7 +37,7 @@ Sexy
   .css('css/comments.css')
   .text('comments.tpl')
   .json('comments.json', function (data, status, tpl) {
-      $.template(tpl, data).appendTo('#comments');
+    $.template(tpl, data).appendTo('#comments');
   });
   
 </script>
@@ -65,9 +65,39 @@ Each of the above methods can take either a url and optional callback as argumen
 
 All callbacks receive three arguments: *data* and *status* (from jQuery's native functionality) and *previous* which is the return value of the previously executed callback.
 
-_If no callback is supplied for any of the data carrying calls (*html*, *json*, *jsonp*, *text*, *xml*), a pass-through function automagically returns the request data to the next callback.
+_If no callback is supplied for any of the data carrying calls (*html*, *json*, *jsonp*, *text*, *xml*), a pass-through function automagically returns the request data to the next callback._
 
-If no callback is supplied for the two non-data carrying calls (*script*/*js*, *style*/*css*) or *setup*, a pass-through function automagically returns the most recently returned value._
+<pre><code>Sexy
+  .js('/js/jquery.template.min.js')
+  .css('css/comments.css')
+  
+  // Note there is no callback...
+  .text('comments.tpl')
+  
+  // ...yet the tpl appears over here!
+  .json('comments.json', function (data, status, tpl) {
+    $.template(tpl, data).appendTo('#comments');
+  });
+</code></pre>
+
+_If no callback is supplied for the two non-data carrying calls (*script*/*js*, *style*/*css*) or *setup*, a pass-through function automagically returns the most recently returned value._
+
+<pre><code>Sexy
+  
+  // Note there is no callback...
+  .text('comments.tpl')
+
+  // ...none here either...
+  .js('/js/jquery.template.min.js')
+  
+  // ...or here...
+  .css('css/comments.css')
+  
+  // ...yet the tpl appears over here!
+  .json('comments.json', function (data, status, tpl) {
+    $.template(tpl, data).appendTo('#comments');
+  });
+</code></pre>
 
 You can also set a default configuration for successive calls:
 
