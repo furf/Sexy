@@ -6,14 +6,17 @@ h2. Sexy.js
 
 *Sequential Ajax*, or *Sajax*, is an Ajax design pattern where related asynchronous XMLHttpRequests are made simultaneously and their callbacks fired in a specified sequence, regardless of the order in which they return, with each callback function receiving the return value of the previous callback function as an additional argument.
 
-Sajax simplifies and speeds the loading of scripts, stylesheets, and data, while facilitating the combination and manipulation of data from multiple sources without complicated workarounds to handle the implicit timing issues of Ajax's asynchronous nature.
+The Sajax pattern simplifies and speeds the loading of scripts, stylesheets, and data, while facilitating the combination and manipulation of data from multiple sources without complicated workarounds to handle the implicit timing issues of Ajax's asynchronous nature.
 
-Sexy.js makes it look good. Damn good.
+And Sexy.js makes it look good.
+
+Damn good.
 
 h3. Ugly
 
 <pre><code><script src="/js/jquery.template.min.js" type="text/javascript" charset="utf-8"></script>
-<link rel="stylesheet" href="css/comments.css" type="text/css" media="screen" charset="utf-8">
+<link rel="stylesheet" href="css/comments.css" type="text/css" media="screen" charset="utf-8"/>
+
 <script type="text/javascript" charset="utf-8">
 
 $.get('comments.tpl', function (tpl) {
@@ -49,7 +52,7 @@ Sexy provides a chainable API for loading each of the data types supported by jQ
 * *text* (url, callback)
 * *xml* (url, callback)
 
-as well as one additional method for loading CSS (only local):
+as well as one additional method for loading CSS (local file access only):
 
 * *style* (url, callback)
 
@@ -60,7 +63,17 @@ and two aliases for sex appeal:
 
 Each of the above methods can take either a url and optional callback as argument or a single ajaxSetup config object (see jQuery documentation).
 
-All callbacks receive three arguments, data and status (from jQuery's native functionality) and previous which is the return value of the previously executed callback.
+All callbacks receive three arguments: *data* and *status* (from jQuery's native functionality) and *previous* which is the return value of the previously executed callback.
+
+_If no callback is supplied for any of the data carrying calls (*html*, *json*, *jsonp*, *text*, *xml*), a pass-through function automagically returns the request data to the next callback.
+
+If no callback is supplied for the two non-data carrying calls (*script*/*js*, *style*/*css*) or *setup*, a pass-through function automagically returns the most recently returned value._
+
+You can also set a default configuration for successive calls:
+
+* *setup* (_cfg_)
+
+*setup* can be used anywhere in the chain to change the default configuration. Passing no arguments will remove any previously configured options.
 
 Sexy also has an additional method for bundling packaged scripts:
 
@@ -114,3 +127,9 @@ h4. Bundling
     }
   );
 </code></pre>
+
+h3. History
+
+The original goal when designing $.sajax, the predecessor to Sexy, was a simple pattern for executing and handling multiple Ajax requests. But by building upon jQuery's robust Ajax framework, $.sajax also coincidentally achieved the goal of asynchronous script loading, a performance optimization similar to those found in Kyle Simpson's "LABjs":http://labjs.com/ and Steve Souders' "EFWS":http://stevesouders.com/efws/. However, neither $.sajax nor Sexy are currently designed for optimal performance. For pure performance, use either of these two more mature examples. $.sajax's dependency on jQuery also results in a bit of a performance hit. For convenience and style with substance, use Sexy.js.
+
+NOTE: The library is still in alpha, but _is_ currently in use on MLB.com's 2010 website (in development).
