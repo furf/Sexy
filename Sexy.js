@@ -1,5 +1,10 @@
-// @todo support remote CSS with <link/>
-// @todo figure out callback trigger for remote CSS
+/**
+ * Sexy.js
+ * http://sexyjs.com/
+ *
+ * Copyright 2010, Dave Furfero
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ */
 (function ($) {
 
   var HOST   = location.protocol + '//' + location.hostname + (location.port !== '' ? ':' + location.port : ''),
@@ -8,13 +13,20 @@
       STYLE  = 'style',
       _proto_;
 
+  /**
+   * Sexy
+   * @param Object cfg an Ajax setup configuration object
+   * @return Object a Sexy instance
+   */
   function Sexy (cfg) {
+
     /**
      * Allow instantiation without new keyword
      */
     if (!(this instanceof Sexy)) {
       return new Sexy(cfg);
     }
+    
     this.cfgs = [];
     this.setup(cfg);
     this.evt = $(this);
@@ -27,6 +39,7 @@
      */
     setup: function (cfg) {
       this.cfg = cfg;
+      return this;
     },
 
     /**
@@ -68,10 +81,6 @@
           cfg         = (typeof url !== 'string') ? url : { url: url },
           isScript    = type === SCRIPT,
           isStyle     = type === STYLE,
-          
-          // for the time being isXSS only tracks JS
-          // need to figure out how to fire success on addition of <link/>
-          // (look at YUI)
           isXSS       = isScript && cfg.url.indexOf('http') === 0 && cfg.url.indexOf(HOST) === -1,
 
           /**
