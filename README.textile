@@ -1,16 +1,16 @@
 h2. Sexy.js
 
-"Demo":http://sexyjs.com/demos/comments/
+"View the Demo at SexyJS.com":http://sexyjs.com/demos/comments/
 
-Sexy.js is a lightweight JavaScript library which provides a sleek facade and enhanced Sequential Ajax (Sajax) functionality to jQuery's native Ajax methods.
+*Sexy.js* is a lightweight JavaScript library which provides a sleek facade and enhanced Sequential Ajax (Sajax) functionality to jQuery's native Ajax methods.
 
-Sequential Ajax, or Sajax, is an Ajax design pattern where related asynchronous XMLHttpRequests are made simultaneously and their callbacks fired in a specified sequence, regardless of the order in which they return, with each callback function receiving the return value of the previous callback function as an additional argument.
+*Sequential Ajax*, or *Sajax*, is an Ajax design pattern where related asynchronous XMLHttpRequests are made simultaneously and their callbacks fired in a specified sequence, regardless of the order in which they return, with each callback function receiving the return value of the previous callback function as an additional argument.
 
 Sajax simplifies and speeds the loading of scripts, stylesheets, and data, while facilitating the combination and manipulation of data from multiple sources without complicated workarounds to handle the implicit timing issues of Ajax's asynchronous nature.
 
 Sexy.js makes it look good. Damn good.
 
-Old and busted
+h3. Ugly
 
 <pre><code>
 <script src="/js/jquery.template.min.js" type="text/javascript" charset="utf-8"></script>
@@ -26,7 +26,7 @@ $.get('comments.tpl', function (tpl) {
 </script>
 </code></pre>
 
-Sexy
+h3. Sexy
 
 <pre><code>
 <script type="text/javascript" charset="utf-8">
@@ -44,21 +44,21 @@ Sexy
 
 Sexy provides a chainable API for loading each of the data types supported by jQuery's native Ajax methods:
 
-* html (url, callback)
-* json (url, callback)
-* jsonp (url, callback)
-* script (url, callback)
-* text (url, callback)
-* xml (url, callback)
+* *html* (url, callback)
+* *json* (url, callback)
+* *jsonp* (url, callback)
+* *script* (url, callback)
+* *text* (url, callback)
+* *xml* (url, callback)
 
-as well as one additional method for loading CSS:
+as well as one additional method for loading CSS (only local):
 
-* style (url, callback)
+* *style* (url, callback)
 
 and two aliases for sex appeal:
 
-* js (url, callback) // -> script
-* css (url, callback) // -> style
+* *js* (url, callback) // -> script
+* *css* (url, callback) // -> style
 
 Each of the above methods can take either a url and optional callback as argument or a single ajaxSetup config object (see jQuery documentation).
 
@@ -66,14 +66,14 @@ All callbacks receive three arguments, data and status (from jQuery's native fun
 
 Sexy also has an additional method for bundling packaged scripts:
 
-* bundle (url /*, url2, ... */ /*, callback */)
+* *bundle* (url _, url2, ..., callback_)
 
 The bundle method loads multiple scripts as text and, once all requests are complete, makes a single script injection, and then fires the optional callback. This method is useful for maintaining JavaScript in packages in an environment that doesn't support or necessitate a server-side bundling solution.
 
-Sample code:
+h3. More examples
 
-// Binding
-
+h4. Binding
+<pre><code>
 Sexy
 .json('ticketingData.json', function (data) {
   return data.ticketingInfo;
@@ -84,9 +84,10 @@ Sexy
   }
   // render games...
 });
+</code></pre>
 
-// Bootstrapping
-
+h4. Bootstrapping
+<pre><code>
 Sexy
 .js('js/jquery.template.min.js')
 .css('css/comments.css')
@@ -100,9 +101,10 @@ Sexy
     $.template(previous, data).appendTo('#comments');
   }
 });
+</code></pre>
 
-// Bundling
-
+h4. Bundling
+<pre><code>
 Sexy
 .bundle(
   'mlb.js',
@@ -116,3 +118,4 @@ Sexy
     mlb.stats.app.SortableStats.init();
   }
 );
+</code></pre>
