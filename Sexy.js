@@ -95,7 +95,7 @@
            */
           success = url.success || fn || (isScript || isStyle ? passPrevious : passData);
 
-      cfgs.push($.extend(cfg, this.cfg, {
+      cfgs.push(cfg = $.extend(true, {}, this.cfg, cfg, {
 
         /**
          * Retrieve script and style data types as text for deferred
