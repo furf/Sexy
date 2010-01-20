@@ -249,6 +249,6 @@
   /**
    * Put 'em on the glass!
    */
-  window.Sexy = Sexy;
+  $.sajax = window.Sexy = Sexy;
 
 })(jQuery);
