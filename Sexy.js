@@ -7,10 +7,15 @@
  */
 (function ($) {
 
-  var HOST   = location.protocol + '//' + location.hostname + (location.port !== '' ? ':' + location.port : ''),
-      TEXT   = 'text',
-      SCRIPT = 'script',
-      STYLE  = 'style',
+  var HOST        = location.protocol + '//' + location.hostname + (location.port !== '' ? ':' + location.port : ''),
+      ON_SEND     = 'send-',
+      ON_SUCCESS  = 'success-',
+      ON_ERROR    = 'error-',
+      SCRIPT      = 'script',
+      STYLE       = 'style',
+      TEXT        = 'text',
+      RESULT_DATA = '__',
+      rnotwhite   = /\S/,
       _proto_;
 
   /**
@@ -63,18 +68,14 @@
       });
     },
 
-    get: function (type, url, /* defer, */ fn) {
+    get: function (type, url, defer, fn) {
 
-      // if (typeof defer !== 'boolean') {
-      //   fn = defer;
-      //   defer = false;
-      // }
+      if (typeof defer !== 'boolean') {
+        fn = defer;
+        defer = false;
+      }
 
-      var RESULT_DATA = '__',
-          ON_SEND     = 'send',
-          ON_SUCCESS  = 'success',
-          rnotwhite   = /\S/,
-          evt         = this.evt,
+      var evt         = this.evt,
           cfgs        = this.cfgs,
           uid         = cfgs.length,
           pid         = uid - 1,
@@ -93,8 +94,9 @@
            * types except script and style) or the return of last callback
            * (for script and style data types).
            */
-          success = url.success || fn || (isScript || isStyle ? passPrevious : passData);
-
+          success = url.success || fn || (isScript || isStyle ? passPrevious : passData),
+          error = url.error || function () {};
+          
       cfgs.push(cfg = $.extend(true, {}, this.cfg, cfg, {
 
         /**
@@ -150,7 +152,8 @@
              */
             } else if (isStyle) {
               if (data && rnotwhite.test(data)) {
-                $('<style type="text/css"/>').appendTo('head').text(data);
+                // $('<style type="text/css"/>').appendTo('head').text(data);
+                $('body').append('<style type="text/css">' + data + '</style>');
               }
             }
             
@@ -159,7 +162,8 @@
              * response and the stored result of the previous success callback
              * as arguments.
              */
-            cfg[RESULT_DATA] = success.call(cfg, data, status, prev && prev[RESULT_DATA]);
+            // @todo document passing of next config
+            cfg[RESULT_DATA] = success.call(cfg, data, status, prev && prev[RESULT_DATA], cfgs[uid + 1]);
 
             /**
              * Trigger the "onSuccess" event of the current Ajax request to
@@ -180,30 +184,36 @@
             evt.one(ON_SUCCESS + pid, [data, status], cfg.success);
           }
 
+        },
+        
+        error: function (/* xhr, status, error */) {
+          error.apply(cfg, arguments);
+          evt.trigger(ON_ERROR + uid, arguments);
         }
       }));
 
-      // function send () {
-      //   $.ajax(cfg);
-      //   evt.trigger(ON_SEND + uid);
-      // };
-      // 
-      // if (defer) {
-      //   evt.one(ON_SUCCESS + pid, send);
-      //   this.defer = uid;
-      // } else if (this.defer) {
-      //   evt.one(ON_SEND + this.defer, send);
-      // } else {
-      //   send();
-      // }
-      
-      if (isXSS && isScript) {
-        evt.one(ON_SUCCESS + pid, function () {
-          $.ajax(cfg);
-        });
-      } else {
+      function send () {
         $.ajax(cfg);
+        evt.trigger(ON_SEND + uid);
+      };
+      
+      if (isXSS || defer) {
+        evt.one(ON_SUCCESS + pid, send);
+        this.defer = uid;
+      } else if (this.defer) {
+        evt.one(ON_SEND + this.defer, send);
+      } else {
+        send();
       }
+
+      /**
+       * Cascading errors
+       */
+      // @todo is this worthwhile?
+      // @todo sequential error handling - keep errors from firing before previous callbacks
+      evt.one(ON_ERROR + pid, function (evt, xhr, status, error) {
+        cfg.error.call(cfg, xhr, status, error);
+      });
       
       return this;
     }
@@ -225,8 +235,8 @@
    * Slip into something more comfortable: dataType-based convenience methods
    */
   $.each(['html', 'json', 'jsonp', SCRIPT, STYLE, TEXT, 'xml'], function (i, type) {
-    _proto_[type] = function (url, /* defer, */ fn) {
-      return this.get(type, url, /* defer, */ fn);
+    _proto_[type] = function (url, defer, fn) {
+      return this.get(type, url, defer, fn);
     };
   });
 
