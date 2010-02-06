@@ -7,6 +7,7 @@
  */
 (function ($) {
 
+
   var HOST        = location.protocol + '//' + location.hostname + (location.port !== '' ? ':' + location.port : ''),
       ON_SEND     = 'send-',
       ON_SUCCESS  = 'success-',
@@ -18,10 +19,9 @@
       rnotwhite   = /\S/,
       _proto_;
 
+
   /**
-   * Sexy
-   * @param Object cfg an Ajax setup configuration object
-   * @return Object a Sexy instance
+   * @constructor
    */
   function Sexy (cfg) {
 
@@ -31,13 +31,15 @@
     if (!(this instanceof Sexy)) {
       return new Sexy(cfg);
     }
-    
+
     this.cfgs = [];
     this.setup(cfg);
     this.evt = $(this);
   }
 
+
   _proto_ = Sexy.prototype = {
+
 
     /**
      * Set the mood
@@ -46,6 +48,7 @@
       this.cfg = cfg;
       return this;
     },
+
 
     /**
      * Nice package: Load a sequence of scripts as text, assemble them in order,
@@ -58,22 +61,30 @@
           i, n;
 
       for (i = 0, n = args.length - 1; i < n; ++i) {
-        this.get(TEXT, args[i], couple);
+        this.text(args[i], couple);
       }
 
-      return this.get(TEXT, args[i], function (data, status, previous) {
+      return this.text(args[i], function (data, status, previous) {
         var src = couple(data, status, previous);
         $.globalEval(src);
         return fn(src, status);
       });
-    },
+    }
 
-    get: function (type, url, defer, fn) {
+  };
 
-      if (typeof defer !== 'boolean') {
-        fn = defer;
-        defer = false;
-      }
+
+  /**
+   * Slip into something more comfortable: dataType-based convenience methods
+   */
+  $.each(['html', 'json', 'jsonp', SCRIPT, STYLE, TEXT, 'xml'], function (i, type) {
+
+    _proto_[type] = function (url/*, defer*/, fn) {
+
+      // if (typeof defer !== 'boolean') {
+      //   fn = defer;
+      //   defer = false;
+      // }
 
       var evt         = this.evt,
           cfgs        = this.cfgs,
@@ -96,7 +107,7 @@
            */
           success = url.success || fn || (isScript || isStyle ? passPrevious : passData),
           error = url.error || function () {};
-          
+
       cfgs.push(cfg = $.extend(true, {}, this.cfg, cfg, {
 
         /**
@@ -111,7 +122,7 @@
          * event-driven handler.
          */
         success: function (data, status) {
-          
+
           var prev = cfgs[pid];
 
           /**
@@ -133,7 +144,7 @@
              * If the first argument contains our event manager in its
              * target property, then the previous response just
              * completed and triggered its "onSuccess" event, which fired
-             * this callback. Use the passed data as argument to the 
+             * this callback. Use the passed data as argument to the
              * user-configured callback.
              */
             if (data && data.target === evt[0]) {
@@ -156,14 +167,14 @@
                 $('body').append('<style type="text/css">' + data + '</style>');
               }
             }
-            
+
             /**
              * Call the user-configured success callback, passing the current
              * response and the stored result of the previous success callback
              * as arguments.
              */
             // @todo document passing of next config
-            cfg[RESULT_DATA] = success.call(cfg, data, status, prev && prev[RESULT_DATA], cfgs[uid + 1]);
+            cfg[RESULT_DATA] = success.call(cfg, data, status, prev && prev[RESULT_DATA]/*, cfgs[uid + 1]*/);
 
             /**
              * Trigger the "onSuccess" event of the current Ajax request to
@@ -185,7 +196,7 @@
           }
 
         },
-        
+
         error: function (/* xhr, status, error */) {
           error.apply(cfg, arguments);
           evt.trigger(ON_ERROR + uid, arguments);
@@ -196,8 +207,8 @@
         $.ajax(cfg);
         evt.trigger(ON_SEND + uid);
       };
-      
-      if (isXSS || defer) {
+
+      if (isXSS/* || defer*/) {
         evt.one(ON_SUCCESS + pid, send);
         this.defer = uid;
       } else if (this.defer) {
@@ -214,11 +225,34 @@
       evt.one(ON_ERROR + pid, function (evt, xhr, status, error) {
         cfg.error.call(cfg, xhr, status, error);
       });
-      
-      return this;
-    }
-  };
 
+      return this;
+    };
+
+  });
+
+
+  /**
+   * A rose by any other name: sexy pseudonyms for script and style methods
+   */
+  _proto_.js  = _proto_[SCRIPT];
+  _proto_.css = _proto_[STYLE];
+
+
+  /**
+   * Get naked: alias instance methods as static methods of Sexy constructor
+   * for ()-less instantiation
+   */
+  $.each(_proto_, function (name, method) {
+    Sexy[name] = function () {
+      return method.apply(new Sexy(), arguments);
+    };
+  });
+
+
+  /**
+   * Implicit callbacks
+   */
   function passData (data) {
     return data;
   }
@@ -231,34 +265,11 @@
     return (previous || '') + data;
   }
 
-  /**
-   * Slip into something more comfortable: dataType-based convenience methods
-   */
-  $.each(['html', 'json', 'jsonp', SCRIPT, STYLE, TEXT, 'xml'], function (i, type) {
-    _proto_[type] = function (url, defer, fn) {
-      return this.get(type, url, defer, fn);
-    };
-  });
-
-  /**
-   * A rose by any other name: sexy pseudonyms for script and style methods
-   */
-  _proto_.js  = _proto_[SCRIPT];
-  _proto_.css = _proto_[STYLE];
-
-  /**
-   * Get naked: alias instance methods as static methods of Sexy constructor
-   * for ()-less instantiation
-   */
-  $.each(_proto_, function (name, method) {
-    Sexy[name] = function () {
-      return method.apply(new Sexy(), arguments);
-    };
-  });
 
   /**
    * Put 'em on the glass!
    */
   $.sajax = window.Sexy = Sexy;
+
 
 })(jQuery);
