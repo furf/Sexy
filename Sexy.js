@@ -1,5 +1,5 @@
 /**
- * Sexy.js
+ * Sexy.js 0.6.9
  * http://sexyjs.com/
  *
  * Copyright 2010, Dave Furfero
@@ -20,9 +20,6 @@
       _proto_;
 
 
-  /**
-   * @constructor
-   */
   function Sexy (cfg) {
 
     /**
@@ -79,12 +76,7 @@
    */
   $.each(['html', 'json', 'jsonp', SCRIPT, STYLE, TEXT, 'xml'], function (i, type) {
 
-    _proto_[type] = function (url/*, defer*/, fn) {
-
-      // if (typeof defer !== 'boolean') {
-      //   fn = defer;
-      //   defer = false;
-      // }
+    _proto_[type] = function (url, fn) {
 
       var evt         = this.evt,
           cfgs        = this.cfgs,
@@ -93,7 +85,7 @@
           cfg         = (typeof url !== 'string') ? url : { url: url },
           isScript    = type === SCRIPT,
           isStyle     = type === STYLE,
-          isXSS       = isScript && cfg.url.indexOf('http') === 0 && cfg.url.indexOf(HOST) === -1,
+          isXSS       = cfg.url.indexOf('http') === 0 && cfg.url.indexOf(HOST) === -1,
 
           /**
            * Cache the user-configured success callbacks.
@@ -115,7 +107,7 @@
          * evaluation to guarantee ordering. Scripts and styles are inserted
          * into the DOM immediately before the success callback is fired.
          */
-        dataType: (!isXSS && isScript || isStyle) ? TEXT : type,
+        dataType: ((isScript || isStyle) && !isXSS) ? TEXT : type,
 
         /**
          * Wrap the user-configured success callback with an
@@ -163,7 +155,6 @@
              */
             } else if (isStyle) {
               if (data && rnotwhite.test(data)) {
-                // $('<style type="text/css"/>').appendTo('head').text(data);
                 $('body').append('<style type="text/css">' + data + '</style>');
               }
             }
@@ -174,7 +165,7 @@
              * as arguments.
              */
             // @todo document passing of next config
-            cfg[RESULT_DATA] = success.call(cfg, data, status, prev && prev[RESULT_DATA]/*, cfgs[uid + 1]*/);
+            cfg[RESULT_DATA] = success.call(cfg, data, status, prev && prev[RESULT_DATA]);
 
             /**
              * Trigger the "onSuccess" event of the current Ajax request to
@@ -203,16 +194,37 @@
         }
       }));
 
+      /**
+       * Wrap AJAX request to provide an onSend event.
+       */
       function send () {
         $.ajax(cfg);
         evt.trigger(ON_SEND + uid);
       };
-
-      if (isXSS/* || defer*/) {
+      
+      /**
+       * If the request requires blocking (XSS JS/CSS), bind its execution to
+       * the success event of the previous request.
+       */
+      if (isXSS && (isScript || isStyle) && uid > 0) {
         evt.one(ON_SUCCESS + pid, send);
+
+        /**
+         * Set the offset for subsequent non-blocking requests to the current
+         * request.
+         */
         this.defer = uid;
+
+      /**
+       * Bind subsequent non-blocking requests to the most recent blocking
+       * request.
+       */
       } else if (this.defer) {
         evt.one(ON_SEND + this.defer, send);
+        
+      /**
+       * Otherwise, execute the request immediately.
+       */
       } else {
         send();
       }
@@ -228,7 +240,6 @@
 
       return this;
     };
-
   });
 
 
