@@ -183,7 +183,7 @@
            * applied to the user-configured callback.
            */
           } else {
-            evt.one(ON_SUCCESS + pid, [data, status], cfg.success);
+            evt.bind(ON_SUCCESS + pid, [data, status], cfg.success);
           }
 
         },
@@ -211,7 +211,7 @@
        * the success event of the previous request.
        */
       if (isXSS && (isScript || isStyle) && uid > 0) {
-        evt.one(ON_SUCCESS + pid, send);
+        evt.bind(ON_SUCCESS + pid, send);
 
         /**
          * Set the offset for subsequent non-blocking requests to the current
@@ -224,7 +224,7 @@
        * request.
        */
       } else if (this.defer) {
-        evt.one(ON_SEND + this.defer, send);
+        evt.bind(ON_SEND + this.defer, send);
 
       /**
        * Otherwise, execute the request immediately.
@@ -238,7 +238,7 @@
        */
       // @todo is this worthwhile?
       // @todo sequential error handling - keep errors from firing before previous callbacks
-      evt.one(ON_ERROR + pid, function (evt, xhr, status, error) {
+      evt.bind(ON_ERROR + pid, function (evt, xhr, status, error) {
         cfg.error.call(cfg, xhr, status, error);
       });
 
