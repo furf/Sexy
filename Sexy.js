@@ -76,7 +76,15 @@
    */
   $.each(['html', 'json', 'jsonp', SCRIPT, STYLE, TEXT, 'xml'], function (i, type) {
 
-    _proto_[type] = function (url, fn) {
+    _proto_[type] = function (url, defer, fn) {
+
+      /**
+       * Shift arguments
+       */
+      if (typeof defer !== 'boolean') {
+        fn = defer;
+        defer = false;
+      }
 
       var evt         = this.evt,
           cfgs        = this.cfgs,
@@ -99,6 +107,16 @@
            */
           success = url.success || fn || (isScript || isStyle ? passPrevious : passData),
           error = url.error || function () {};
+
+      /**
+       * Determine whether this call will be deferred until onSuccess event
+       * of the previous request.
+       */
+      if (isXSS && (isScript || isStyle) && uid > 0) {
+        cfg.defer = true;
+      } else {
+        cfg.defer = cfg.defer || defer;
+      }
 
       cfgs.push(cfg = $.extend(true, {}, this.cfg, cfg, {
 
@@ -165,7 +183,7 @@
              * as arguments.
              */
             // @todo document passing of next config
-            cfg[RESULT_DATA] = success.call(cfg, data, status, prev && prev[RESULT_DATA]);
+            cfg[RESULT_DATA] = success.call(cfg, data, status, prev && prev[RESULT_DATA], cfgs[uid + 1]);
 
             /**
              * Trigger the "onSuccess" event of the current Ajax request to
@@ -210,7 +228,7 @@
        * If the request requires blocking (XSS JS/CSS), bind its execution to
        * the success event of the previous request.
        */
-      if (isXSS && (isScript || isStyle) && uid > 0) {
+      if (cfg.defer) {
         evt.bind(ON_SUCCESS + pid, send);
 
         /**
