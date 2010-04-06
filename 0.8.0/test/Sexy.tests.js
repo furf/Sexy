@@ -915,30 +915,85 @@ asyncTest('defer, verbose syntax', 3, function() {
 
 });
 
-asyncTest('defer, combo syntax', 5, function() {
+asyncTest('defer, one of each', 6, function() {
 
-  var n = 0;
+  var htmlSuccess   = false,
+      jsonSuccess   = false,
+      jsonpSuccess  = false,
+      scriptSuccess = false,
+      styleSuccess  = false,
+      textSuccess   = false,
+      xmlSuccess    = false;
 
   Sexy
-    .json('data/sleep.php?file=fruit.json', function (response, previous, next, status) {
-      equals(n++, 0, 'proper callback sequence');
-      next.data.foo = 'baz';
-    })
-    .json({
-      url: 'data/sleep.php?file=repeat.php',
-      data: { foo:'bar' },
+    .html({
+      url: 'data/fruit.html',
       defer: true,
-      success: function (response, previous, next, status) {
-        equals(n++, 1, 'proper callback sequence');
-        equals(response.foo, 'baz');
-        next.url = next.url + '?boo=fuz';
+      success: function () {
+        htmlSuccess = true;
       }
     })
-    .json('data/repeat.php', true, function (response, previous, next, status) {
-      equals(n++, 2, 'proper callback sequence');
-      equals(response.boo, 'fuz');
-      start();
-    });
+    .json({
+      url: 'data/fruit.json',
+      defer: true,
+      beforeSend: function () {
+        ok(htmlSuccess, 'proper execution sequence');
+      },
+      success: function () {
+        jsonSuccess = true;
+      }
+    })
+    .jsonp({
+      url: 'data/fruit.php',
+      defer: true,
+      beforeSend: function () {
+        ok(jsonSuccess, 'proper execution sequence');
+      },
+      success: function () {
+        jsonpSuccess = true;
+      }
+    })
+    .script({
+      url: 'data/fruit.js',
+      defer: true,
+      beforeSend: function () {
+        ok(jsonpSuccess, 'proper execution sequence');
+      },
+      success: function () {
+        scriptSuccess = true;
+      }
+    })
+    .style({
+      url: 'data/fruit.css',
+      defer: true,
+      beforeSend: function () {
+        ok(scriptSuccess, 'proper execution sequence');
+      },
+      success: function () {
+        styleSuccess = true;
+      }
+    })
+    .text({
+      url: 'data/fruit.txt',
+      defer: true,
+      beforeSend: function () {
+        ok(scriptSuccess, 'proper execution sequence');
+      },
+      success: function () {
+        textSuccess = true;
+      }
+    })
+    .xml({
+      url: 'data/fruit.xml',
+      defer: true,
+      beforeSend: function () {
+        ok(textSuccess, 'proper execution sequence');
+      },
+      success: function () {
+        start();
+      }
+    })
+      
 
 });
 
@@ -1232,96 +1287,3 @@ asyncTest('remote, unbiased', 7, function () {
     .script(scriptCfg)
     .style(styleCfg);
 });
-
-
-// /**
-//  * 
-//  */
-// module('error');
-// 
-// asyncTest('local, unbiased', 7, function () {
-// 
-//   var n = 0,
-//       fruit = this.fruit,
-//       host = 'data/',
-//       htmlCfg = {
-//         url: host + '404.html',
-//         success: function (data, previous, next, status) {
-//           console.log('html, success');
-//         },
-//         error: function (xhr, status, error) {
-//           equals(n++, 0, 'proper callback sequence');
-//           console.log('html, error');
-//         }      
-//       },
-//       jsonCfg = {
-//         url: host + '404.json',
-//         success: function (data, previous, next, status) {
-//           console.log('json, success');
-//         },
-//         error: function (xhr, status, error) {
-//           equals(n++, 1, 'proper callback sequence');
-//           console.log('json, error');
-//         }      
-//       },
-//       jsonpCfg = {
-//         url: host + '404.php',
-//         success: function (data, previous, next, status) {
-//           console.log('jsonp, success');
-//         },
-//         error: function (xhr, status, error) {
-//           equals(n++, 2, 'proper callback sequence');
-//           console.log('jsonp, error');
-//         }      
-//       },
-//       scriptCfg = {
-//         url: host + '404.js',
-//         success: function (data, previous, next, status) {
-//           console.log('js, success');
-//         },
-//         error: function (xhr, status, error) {
-//           equals(n++, 3, 'proper callback sequence');
-//           console.log('js, error');
-//         }      
-//       },
-//       styleCfg = {
-//         url: host + '404.css',
-//         success: function (data, previous, next, status) {
-//           console.log('css, success');
-//         },
-//         error: function (xhr, status, error) {
-//           equals(n++, 4, 'proper callback sequence');
-//           console.log('css, error');
-//         }      
-//       },
-//       textCfg = {
-//         url: host + '404.txt',
-//         success: function (data, previous, next, status) {
-//           console.log('txt, success');
-//         },
-//         error: function (xhr, status, error) {
-//           equals(n++, 5, 'proper callback sequence');
-//           console.log('txt, error');
-//         }      
-//       },
-//       xmlCfg = {
-//         url: host + '404.xml',
-//         success: function (data, previous, next, status) {
-//           console.log('xml, success');
-//         },
-//         error: function (xhr, status, error) {
-//           equals(n++, 6, 'proper callback sequence');
-//           console.log('xml, error');
-//           start();
-//         }      
-//       };
-// 
-//   Sexy
-//     .html(htmlCfg)
-//     .json(jsonCfg)
-//     .jsonp(jsonpCfg)
-//     .script(scriptCfg)
-//     .style(styleCfg)
-//     .text(textCfg)
-//     .xml(xmlCfg);
-// });
