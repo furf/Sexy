@@ -993,7 +993,6 @@ asyncTest('defer, one of each', 6, function() {
         start();
       }
     })
-      
 
 });
 

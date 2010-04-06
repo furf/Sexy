@@ -6,7 +6,7 @@
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://sexyjs.com/license
  */
-(function (window, document, adapter, undefined) {
+(function (window, document, adapter) {
 
   var HOST        = location.protocol + '//' + location.hostname + (location.port !== '' ? ':' + location.port : ''),
       RESULT_DATA = '__',
