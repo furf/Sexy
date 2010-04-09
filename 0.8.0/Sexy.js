@@ -404,6 +404,8 @@
     toString = Object.prototype.toString,
     hasOwn = Object.prototype.hasOwnProperty,
   	trim = String.prototype.trim,
+  	trimLeft = /^\s+/,
+  	trimRight = /\s+$/,
     rnotwhite = /\S/,
     jsc = now(),
     // rscript = /<script(.|\s)*?\/script>/gi,
