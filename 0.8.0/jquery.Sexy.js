@@ -46,12 +46,15 @@
           remote   = cfg.url.indexOf('http') === 0 && cfg.url.indexOf(HOST) === -1,
           isScript = realType === 'script',
           isStyle  = realType === 'style',
+          defer    = uid > 0 ? remote && (isScript || isStyle) ? true : cfg.defer : false,
           success  = cfg.success || (isScript || isStyle ? passPrevious : passData),
           error    = cfg.error || adapter.noop,
           complete = cfg.complete || adapter.noop;
 
       cfgs.push(adapter.extend(true, cfg, this.cfg, cfg, {
 
+        sendAfterSend: [],
+        
         /**
          * Retrieve script and style data types as text for deferred
          * evaluation to guarantee ordering. Scripts and styles are inserted
@@ -132,10 +135,19 @@
 
 
       function send () {
+
+        var i, n;
+
         if (isStyle && remote) {
           adapter.getCSS(cfg.url, cfg.success);
         } else {
           adapter.ajax(cfg);
+        }
+        
+        if (cfg.sendAfterSend.length > 0) {
+          for (i = 0, n = cfg.sendAfterSend.length; i < n; ++i) {
+            cfg.sendAfterSend[i]();
+          }
         }
       }
 
@@ -144,8 +156,11 @@
        * (via <script> and <link> tags) and execute immediatele, we defer the
        * request until after the successful response of the previous request.
        */
-      if (uid > 0 ? remote && (isScript || isStyle) ? true : cfg.defer : false) {
+      if (defer) {
         prev.sendAfterSuccess = send;
+        this.lastDefer = cfg;
+      } else if (this.lastDefer) {
+        this.lastDefer.sendAfterSend.push(send);
       } else {
         send();
       }
