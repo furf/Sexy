@@ -5,6 +5,13 @@
  * Copyright 2010, Dave Furfero
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://sexyjs.com/license
+ *
+ * jQuery JavaScript Library v1.4.2
+ * http://jquery.com/
+ *
+ * Copyright 2010, John Resig
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
  */
 (function (window, document, adapter) {
 
@@ -208,16 +215,26 @@
   function addDataTypeMethod (dataType) {
     Sexy.prototype[dataType] = function (url, defer, success) {
 
-      if (typeof defer !== 'boolean') {
-        success = defer;
-        defer   = false;
-      }
+      var cfg;
 
-      var cfg = adapter.isPlainObject(url) ? url : {
-        url:      url,
-        defer:    defer,
-        success:  success
-      };
+      if (typeof url === 'string') {
+
+        if (typeof defer !== 'boolean') {
+          success = defer;
+          defer   = false;
+        }
+
+        cfg = {
+          url:     url,
+          defer:   defer,
+          success: success
+        };
+
+      } else {
+
+        cfg = url;
+
+      }
 
       cfg.dataType = dataType;
 
@@ -245,7 +262,7 @@
     addStaticMethod(i);
   }
 
-  window.Sexy = Sexy;
+  window.Sexy = adapter.sajax = Sexy;
 
 })(this, this.document,
 
