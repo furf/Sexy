@@ -13,7 +13,7 @@
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://jquery.org/license
  */
-(function (window, document, adapter) {
+(function (window, document, jQuery) {
 
   var HOST        = location.protocol + '//' + location.hostname + (location.port !== '' ? ':' + location.port : ''),
       RESULT_DATA = '__',
@@ -55,10 +55,10 @@
           isStyle  = realType === 'style',
           defer    = uid > 0 ? remote && (isScript || isStyle) ? true : cfg.defer : false,
           success  = cfg.success || (isScript || isStyle ? passPrevious : passData),
-          error    = cfg.error || adapter.noop,
-          complete = cfg.complete || adapter.noop;
+          error    = cfg.error || jQuery.noop,
+          complete = cfg.complete || jQuery.noop;
 
-      cfgs.push(adapter.extend(true, cfg, this.cfg, cfg, {
+      cfgs.push(jQuery.extend(true, cfg, this.cfg, cfg, {
 
         sendAfterSend: [],
         
@@ -86,9 +86,9 @@
              * Evaluate (local) script and style dataTypes.
              */
             if (isScript && !remote) {
-              adapter.globalEval(data);
+              jQuery.globalEval(data);
             } else if (isStyle && !remote) {
-              data = adapter.styleEval(data);
+              data = jQuery.styleEval(data);
             }
 
             /**
@@ -124,7 +124,7 @@
            * nextSuccess event of the previous request.
            */
           } else {
-            prev.nextSuccess = adapter.proxy(function () {
+            prev.nextSuccess = jQuery.proxy(function () {
               cfg.success(data, status);
             }, cfg);
           }
@@ -146,9 +146,9 @@
         var i, n;
 
         if (isStyle && remote) {
-          adapter.getCSS(cfg.url, cfg.success);
+          jQuery.getCSS(cfg.url, cfg.success);
         } else {
-          adapter.ajax(cfg);
+          jQuery.ajax(cfg);
         }
         
         if (cfg.sendAfterSend.length > 0) {
@@ -178,7 +178,7 @@
     bundle: function (/* url, url2, ..., fn */) {
 
       var args = arguments,
-          fn   = adapter.isFunction(args[args.length - 1]) ? Array.prototype.pop.call(args) : passPrevious,
+          fn   = jQuery.isFunction(args[args.length - 1]) ? Array.prototype.pop.call(args) : passPrevious,
           i, n;
 
       for (i = 0, n = args.length - 1; i < n; ++i) {
@@ -187,7 +187,7 @@
 
       return this.text(args[i], function (data, previous, next, status) {
         var src = couple(data, previous);
-        adapter.globalEval(src);
+        jQuery.globalEval(src);
         return fn(src, previous, next, status);
       });
     }
@@ -213,27 +213,20 @@
    * Add sexy convenience methods
    */
   function addDataTypeMethod (dataType) {
-    Sexy.prototype[dataType] = function (url, defer, success) {
+    Sexy.prototype[dataType] = function (cfg, defer, success) {
 
-      var cfg;
-
-      if (typeof url === 'string') {
-
+      if (typeof cfg === 'string') {
+        
         if (typeof defer !== 'boolean') {
           success = defer;
           defer   = false;
         }
-
+        
         cfg = {
-          url:     url,
+          url:     cfg,
           defer:   defer,
           success: success
         };
-
-      } else {
-
-        cfg = url;
-
       }
 
       cfg.dataType = dataType;
@@ -262,7 +255,7 @@
     addStaticMethod(i);
   }
 
-  window.Sexy = adapter.sajax = Sexy;
+  window.Sexy = jQuery.sajax = Sexy;
 
 })(this, this.document,
 
