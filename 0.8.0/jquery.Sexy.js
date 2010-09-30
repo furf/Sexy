@@ -243,9 +243,7 @@
   }
 
   for (i in Sexy.prototype) {
-    if (Sexy.prototype.hasOwnPropery(i)) {
-      addStaticMethod(i);
-    }
+    addStaticMethod(i);
   }
 
   window.Sexy = adapter.sajax = Sexy;
