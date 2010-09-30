@@ -8,7 +8,8 @@
  */
 (function (window, document, adapter) {
 
-  var HOST        = location.protocol + '//' + location.hostname + (location.port !== '' ? ':' + location.port : ''),
+  var loc         = window.location,
+      HOST        = loc.protocol + '//' + loc.hostname + (loc.port !== '' ? ':' + loc.port : ''),
       RESULT_DATA = '__',
       dataTypes   = ['html', 'json', 'jsonp', 'script', 'style', 'text', 'xml'],
       rurl        = /^(\w+:)?\/\/([^\/?#]+)/,
@@ -242,10 +243,12 @@
   }
 
   for (i in Sexy.prototype) {
-    addStaticMethod(i);
+    if (Sexy.prototype.hasOwnPropery(i)) {
+      addStaticMethod(i);
+    }
   }
 
-  window.Sexy = Sexy;
+  window.Sexy = adapter.sajax = Sexy;
 
 })(this, this.document,
 
