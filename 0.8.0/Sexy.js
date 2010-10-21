@@ -18,7 +18,6 @@
   var HOST        = location.protocol + '//' + location.hostname + (location.port !== '' ? ':' + location.port : ''),
       RESULT_DATA = '__',
       dataTypes   = ['html', 'json', 'jsonp', 'script', 'style', 'text', 'xml'],
-      rurl        = /^(\w+:)?\/\/([^\/?#]+)/,
       i, n;
 
   /**

@@ -12,7 +12,6 @@
       HOST        = loc.protocol + '//' + loc.hostname + (loc.port !== '' ? ':' + loc.port : ''),
       RESULT_DATA = '__',
       dataTypes   = ['html', 'json', 'jsonp', 'script', 'style', 'text', 'xml'],
-      rurl        = /^(\w+:)?\/\/([^\/?#]+)/,
       i, n;
 
   /**
