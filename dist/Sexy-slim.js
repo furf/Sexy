@@ -15,6 +15,21 @@
       i, n;
 
   /**
+   * Implicit callbacks
+   */
+  function passData (data) {
+    return data;
+  }
+
+  function passPrevious (data, previous) {
+    return previous;
+  }
+
+  function couple (data, previous) {
+    return (previous || '') + data;
+  }
+
+  /**
    * Constructs a new Sexy instance
    */
   function Sexy (cfg) {
@@ -179,21 +194,6 @@
     }
 
   };
-
-  /**
-   * Implicit callbacks
-   */
-  function passData (data) {
-    return data;
-  }
-
-  function passPrevious (data, previous) {
-    return previous;
-  }
-
-  function couple (data, previous) {
-    return (previous || '') + data;
-  }
 
   /**
    * Add sexy convenience methods
