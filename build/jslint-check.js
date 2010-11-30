@@ -37,7 +37,7 @@ function lint (file) {
 
   var found = 0, src, errors, i, n, error;
 
-	print('JSLint checking: ' + file);
+  print('JSLint checking: ' + file);
 
   src = readFile(file);
 
@@ -47,18 +47,18 @@ function lint (file) {
   
   for (i = 0, n = errors.length; i < n; ++i) {
     
-  	error = errors[i];
+    error = errors[i];
 
-  	if (!ok[error.reason]) {
-  		found++;
-  		print(error.evidence);
-  		print('    Problem at line ' + error.line + ' character ' + error.character + ': ' + error.reason);
-  	}
+    if (!ok[error.reason]) {
+      found++;
+      print(error.evidence);
+      print('    Problem at line ' + error.line + ' character ' + error.character + ': ' + error.reason);
+    }
   }
 
   if (found > 0) {
-  	print(found + ' error(s) found.');
+    print(found + ' error(s) found.');
   } else {
-  	print('JSLint check passed.');
+    print('JSLint check passed.');
   }
 }
