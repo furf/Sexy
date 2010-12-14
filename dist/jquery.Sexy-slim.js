@@ -62,8 +62,8 @@
           isScript = realType === 'script',
           defer    = uid > 0 ? remote && isScript ? true : cfg.defer : false,
           success  = cfg.success || (isScript ? passPrevious : passData),
-          error    = cfg.error || jQuery.noop,
-          complete = cfg.complete || jQuery.noop;
+          error    = cfg.error || this.cfg.error || jQuery.ajaxSettings.error || jQuery.noop,
+          complete = cfg.complete ||  this.cfg.complete || jQuery.ajaxSettings.complete || jQuery.noop;
 
       cfgs.push(jQuery.extend(true, cfg, this.cfg, cfg, {
 
